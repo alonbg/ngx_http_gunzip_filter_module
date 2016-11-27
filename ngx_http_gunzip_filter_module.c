@@ -9,9 +9,9 @@
 #include <ngx_config.h>
 #include <ngx_core.h>
 #include <ngx_http.h>
-#include <nginx.h>
 
 #include <zlib.h>
+
 
 #define NGX_HTTP_GUNZIP_OFF     0
 #define NGX_HTTP_GUNZIP_ON      1
@@ -77,6 +77,7 @@ static ngx_conf_enum_t  ngx_http_gunzip[] = {
     { ngx_string("types"), NGX_HTTP_GUNZIP_TYPES },
     { ngx_null_string, 0 }
 };
+
 
 static ngx_command_t  ngx_http_gunzip_filter_commands[] = {
 
@@ -161,12 +162,9 @@ ngx_http_gunzip_header_filter(ngx_http_request_t *r)
         return ngx_http_next_header_filter(r);
     }
 
-#if (nginx_version >= 8025 || (nginx_version >= 7065 && nginx_version < 8000))
-
     r->gzip_vary = 1;
 
-    if (conf->enable == NGX_HTTP_GUNZIP_ON)
-    {
+    if (conf->enable == NGX_HTTP_GUNZIP_ON) {
         if (!r->gzip_tested) {
             if (ngx_http_gzip_ok(r) == NGX_OK) {
                 return ngx_http_next_header_filter(r);
@@ -175,23 +173,11 @@ ngx_http_gunzip_header_filter(ngx_http_request_t *r)
         } else if (r->gzip_ok) {
                    return ngx_http_next_header_filter(r);
         }
-    }
 
-#else
-
-    if (conf->enable == NGX_HTTP_GUNZIP_ON)
+    } else if (conf->enable == NGX_HTTP_GUNZIP_TYPES
+               && ngx_http_test_content_type(r, &conf->types) == NULL)
     {
-        if (ngx_http_gzip_ok(r) == NGX_OK) {
-            return ngx_http_next_header_filter(r);
-        }
-    }
-
-#endif
-
-    else if (conf->enable == NGX_HTTP_GUNZIP_TYPES
-             && ngx_http_test_content_type(r, &conf->types) == NULL)
-    {
-             return ngx_http_next_header_filter(r);
+               return ngx_http_next_header_filter(r);
     }
     /* else always gunzip - conf->enable == NGX_HTTP_GUNZIP_ALWAYS) */
 
@@ -724,7 +710,7 @@ ngx_http_gunzip_merge_conf(ngx_conf_t *cf, void *parent, void *child)
                              ngx_http_html_default_types)
         != NGX_OK)
     {
-            return NGX_CONF_ERROR;
+        return NGX_CONF_ERROR;
     }
 
     return NGX_CONF_OK;

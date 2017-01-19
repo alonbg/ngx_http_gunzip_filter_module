@@ -16,7 +16,6 @@
 #define NGX_HTTP_GUNZIP_OFF     0
 #define NGX_HTTP_GUNZIP_ON      1
 #define NGX_HTTP_GUNZIP_ALWAYS  2
-#define NGX_HTTP_GUNZIP_TYPES   3
 
 
 typedef struct {
@@ -74,7 +73,6 @@ static ngx_conf_enum_t  ngx_http_gunzip[] = {
     { ngx_string("off"), NGX_HTTP_GUNZIP_OFF },
     { ngx_string("on"), NGX_HTTP_GUNZIP_ON },
     { ngx_string("always"), NGX_HTTP_GUNZIP_ALWAYS },
-    { ngx_string("types"), NGX_HTTP_GUNZIP_TYPES },
     { ngx_null_string, 0 }
 };
 
@@ -82,8 +80,7 @@ static ngx_conf_enum_t  ngx_http_gunzip[] = {
 static ngx_command_t  ngx_http_gunzip_filter_commands[] = {
 
     { ngx_string("gunzip"),
-      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_HTTP_LIF_CONF
-                        |NGX_CONF_TAKE1,
+      NGX_HTTP_MAIN_CONF|NGX_HTTP_SRV_CONF|NGX_HTTP_LOC_CONF|NGX_CONF_TAKE1,
       ngx_conf_set_enum_slot,
       NGX_HTTP_LOC_CONF_OFFSET,
       offsetof(ngx_http_gunzip_conf_t, enable),
@@ -174,12 +171,11 @@ ngx_http_gunzip_header_filter(ngx_http_request_t *r)
                    return ngx_http_next_header_filter(r);
         }
 
-    } else if (conf->enable == NGX_HTTP_GUNZIP_TYPES
+    } else if (conf->enable == NGX_HTTP_GUNZIP_ALWAYS
                && ngx_http_test_content_type(r, &conf->types) == NULL)
     {
                return ngx_http_next_header_filter(r);
     }
-    /* else always gunzip - conf->enable == NGX_HTTP_GUNZIP_ALWAYS) */
 
     ctx = ngx_pcalloc(r->pool, sizeof(ngx_http_gunzip_ctx_t));
     if (ctx == NULL) {

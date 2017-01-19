@@ -1,12 +1,10 @@
 
-Changes with gunzip module 0.4 (2016-11-17):
+Changes with gunzip module 0.4 (2017-1-19):
 
     *) Feature: configurable "gunzip always" option.
        Even if the client supports it.
 
     *) Feature: configurable gunzip only for specific file types
-
-    *) Feature: support gunzip and gunzip_types within "if in location" block.
 
 
 Changes with gunzip module 0.3 (2010-03-22):

@@ -14,9 +14,9 @@ This module was designed to work with nginx 0.8.* (though it should work with
 
 Configuration directives:
 
-    gunzip (on|types|always|off)
+    gunzip (on|always|off)
 
-        Context: http, server, location, if in location
+        Context: http, server, location
         Default: off
 
         off
@@ -25,12 +25,9 @@ Configuration directives:
           Enable gunzip for clients that doesn't support it.
         always
           Enable gunzip even if clients support it.
-        types
-          whether clients support it or not, enable gunzip only for files of
-          mime types specified by gunzip_types.
+          But only for files of mime types specified by gunzip_types.
 
     gunzip_types mime-type ...;
-
         Context: http, server, location, if in location
         Default: gunzip_types text/html;
 
